@@ -30,6 +30,11 @@ function drawMatrix(matrix, offset){
     });
 }
 
+function playerDrop() {
+    player.pos.y++; //moves user down
+    dropCounter = 0;
+}
+
 let dropCounter = 0;
 let dropInterval = 1000;
 
@@ -40,8 +45,7 @@ function update(time = 0) {
 
     dropCounter += deltaTime;
     if (dropCounter > dropInterval) {
-        player.pos.y++;
-        dropCounter = 0;
+        playerDrop();
     }
 
     console.log(time);
@@ -53,5 +57,16 @@ const player = {
     pos: {x: 5, y: 5},
     matrix: matrix,
 }
+
+//allows user input to move pieces using arrow keys
+document.addEventListener('keydown' , event => {
+    if (event.keyCode === 37) {
+        player.pos.x--; //if user presses left arrow key, moves item to the left
+    } else if (event.keyCode === 39) {
+        player.pos.x++; //moves user to the right
+    } else if (event.keyCode === 40) {
+        playerDrop();
+    }
+});
 
 update();
