@@ -6,9 +6,34 @@ context.scale(20, 20);  //increase object size
 
 const matrix = [
     [0, 0, 0],
-    [1, 1, 1],
+    [1, 1, 1],  //add the middle array one so object will rotate around the center vs flipping up and down
     [0, 1, 0],
-]; //add the middle array one so object will rotate around the center vs flipping up and down
+];
+
+//collision detection function
+function collide(arena, player) {
+    const [m, o] = [player.matrix, player.pos];
+    //iterating over the player
+    for (let y = 0; y < m.length; ++y) {
+        for (let x = 0; x < m[y].length; ++x){
+            //y = row, x = column
+            if (m[y][x] !== 0 && //check if player matrix on index y and x is not 0,
+                (arena[y + o.y] && //makes sure the arena row exists. not existing shows a collide
+                arena[y + o.y][x + o.x]) !== 0) { //access the arena row child
+                return true; //yes a collision has occurred
+            }
+        }
+    }
+    return false; //if no collision is detected
+}
+
+function createMatrix(w, h) {
+    const matrix = [];
+    while (h--) {
+        matrix.push(new Array(w).fill(0));
+    }
+    return matrix;
+}
 
 function draw() {
     context.fillStyle = '#000';
@@ -30,6 +55,17 @@ function drawMatrix(matrix, offset){
     });
 }
 
+//copy all values from player into the arena
+function merge(arena, player) {
+    player.matrix.forEach((row, y) => {
+        row.forEach((value, x) => {
+            if (value !== 0) {
+                arena[y + player.pos.y][x + player.pos.x] = value;
+            }
+        }
+    })
+}
+
 function playerDrop() {
     player.pos.y++; //moves user down
     dropCounter = 0;
@@ -48,10 +84,13 @@ function update(time = 0) {
         playerDrop();
     }
 
-    console.log(time);
+    //console.log(time);
     draw();
     requestAnimationFrame(update);
 }
+
+const arena = createMatrix(12, 20); //12 numbers wide, 20 unites high
+
 
 const player = {
     pos: {x: 5, y: 5},
