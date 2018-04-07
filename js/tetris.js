@@ -62,12 +62,19 @@ function merge(arena, player) {
             if (value !== 0) {
                 arena[y + player.pos.y][x + player.pos.x] = value;
             }
-        }
+        })
     })
 }
 
 function playerDrop() {
     player.pos.y++; //moves user down
+    //use merge and collide
+    //if we drop and collide, then we are touching the ground or another piece
+    if (collide(arena, player)) {
+        player.pos.y--; //move the player back up
+        merge(arena, player);
+        player.pos.y = 0; //set the player back to the top
+    }
     dropCounter = 0;
 }
 
