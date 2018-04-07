@@ -80,6 +80,13 @@ function playerDrop() {
     dropCounter = 0;
 }
 
+function playerMove(dir) {
+    player.pos.x += dir;
+    if (collide(arena, player)) {
+        player.pos.x -= dir;
+    }
+}
+
 let dropCounter = 0;
 let dropInterval = 1000;
 
@@ -109,9 +116,9 @@ const player = {
 //allows user input to move pieces using arrow keys
 document.addEventListener('keydown' , event => {
     if (event.keyCode === 37) {
-        player.pos.x--; //if user presses left arrow key, moves item to the left
+        playerMove(-1); //if user presses left arrow key, moves item to the left
     } else if (event.keyCode === 39) {
-        player.pos.x++; //moves user to the right
+        playerMove(1); //moves user to the right
     } else if (event.keyCode === 40) {
         playerDrop();
     }
