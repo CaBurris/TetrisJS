@@ -89,7 +89,20 @@ function playerMove(dir) {
 
 //implement player rotate
 function playerRotate(dir) {
+    const pos = player.pos.x;
+    //initialize an offset variable
+    let offset = 1;
     rotate(player.matrix, dir);
+    //after rotation, check collision again
+    while (collide(arena, player)) {
+        player.pos.x += offset; //moves to the right
+        offset = -(offset + (offset >  0 ? 1 : -1));
+        if (offset > player.matrix[0].length) {
+            rotate(player.matrix, -dir);
+            player.pos.x = pos;
+            return;
+        }
+    }
 }
 
 //create rotation
