@@ -5,6 +5,7 @@ context.scale(20, 20);  //increase object size
 
 //collect rows
 function arenaSweep() {
+    let rowCount = 1;
     //iterate from the bottom up
     outer: for(let y = arena.length - 1; y > 0; --y){
         for (let x = 0; x < arena[y].length; ++x) {
@@ -18,6 +19,11 @@ function arenaSweep() {
         //put this empty row on top of arena
         arena.unshift(row);
         ++y; //offset the y
+
+        //increase player score when clearing a line
+        player.score += rowCount * 10;
+        //for every row, double player score
+        rowCount *= 2;
     }
 
 }
@@ -136,6 +142,7 @@ function playerDrop() {
         merge(arena, player);
         playerReset(); //will create a random new piece
         arenaSweep(); //will remove any filled lines
+        updateScore(); //will update score
     }
     dropCounter = 0;
 }
@@ -158,6 +165,8 @@ function playerReset() {
     //if new piece reaches top of arena, need to clear arena - game over
     if (collide(arena, player))  {
         arena.forEach(row => row.fill(0));
+        player.score = 0;
+        updateScore();
     }
 }
 
@@ -219,6 +228,11 @@ function update(time = 0) {
     requestAnimationFrame(update);
 }
 
+//update score
+function updateScore()  {
+    document.getElementById('score').innerText = player.score;
+}
+
 //setting up color map
 const colors = [
     null,
@@ -235,8 +249,9 @@ const arena = createMatrix(12, 20); //12 numbers wide, 20 unites high
 
 
 const player = {
-    pos: {x: 5, y: 5},
-    matrix: createPiece('T'),
+    pos: {x: 0, y: 0},
+    matrix: null,
+    score: 0,
 }
 
 //allows user input to move pieces using arrow keys
@@ -254,4 +269,6 @@ document.addEventListener('keydown' , event => {
     }
 });
 
+playerReset();
+updateScore();
 update();
