@@ -137,7 +137,10 @@ function playerReset() {
     player.pos.y = 0; //player at the top
     player.pos.x = (arena[0].length / 2 | 0) -
                             (player.matrix[0].length / 2 | 0); //put player in the middle
-
+    //if new piece reaches top of arena, need to clear arena - game over
+    if (collide(arena, player))  {
+        arena.forEach(row => row.fill(0));
+    }
 }
 
 //implement player rotate
