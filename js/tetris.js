@@ -4,12 +4,6 @@ const context = canvas.getContext('2d');
 context.scale(20, 20);  //increase object size
 
 
-const matrix = [
-    [0, 0, 0],
-    [1, 1, 1],  //add the middle array one so object will rotate around the center vs flipping up and down
-    [0, 1, 0],
-];
-
 //collision detection function
 function collide(arena, player) {
     const [m, o] = [player.matrix, player.pos];
@@ -33,6 +27,53 @@ function createMatrix(w, h) {
         matrix.push(new Array(w).fill(0));
     }
     return matrix;
+}
+
+//create peices
+function createPiece(type) {
+    if (type === 'T') {
+        return [
+               [0, 0, 0],
+               [1, 1, 1],
+               [0, 1, 0],
+        ];
+    } else if (type === 'O') {
+        return [
+               [1, 1],
+               [1, 1],
+        ];
+    } else if (type === 'L') {
+        return [
+                [0, 1, 0],
+                [0, 1, 0],
+                [0, 1, 1],
+        ];
+    } else if (type === 'J') {
+        return [
+                [0, 1, 0],
+                [0, 1, 0],
+                [1, 1, 0],
+        ];
+    } else if (type === 'I') {
+        return [
+                [0, 1, 0, 0],
+                [0, 1, 0, 0],
+                [0, 1, 0, 0],
+                [0, 1, 0, 0],
+        ];
+    } else if (type === 'S') {
+        return [
+                [0, 1, 1],
+                [1, 1, 0],
+                [0, 0, 0],
+        ];
+    } else if (type === 'Z') {
+        return [
+                [1, 1, 0],
+                [0, 1, 1],
+                [0, 0, 0],
+        ];
+    }
 }
 
 function draw() {
@@ -75,6 +116,7 @@ function playerDrop() {
     if (collide(arena, player)) {
         player.pos.y--; //move the player back up
         merge(arena, player);
+        playerReset(); //will create a random new piece
         player.pos.y = 0; //set the player back to the top
     }
     dropCounter = 0;
@@ -85,6 +127,17 @@ function playerMove(dir) {
     if (collide(arena, player)) {
         player.pos.x -= dir; // if player collides in arena, player moves back. cannot exit arean now
     }
+}
+
+//get random pieces every time
+function playerReset() {
+    //list all availble pieces in a string
+    const pieces = 'ILJOTSZ';
+    player.matrix = createPiece(pieces[pieces.length * Math.random() | 0]);
+    player.pos.y = 0; //player at the top
+    player.pos.x = (arena[0].length / 2 | 0) -
+                            (player.matrix[0].length / 2 | 0); //put player in the middle
+
 }
 
 //implement player rotate
@@ -100,7 +153,7 @@ function playerRotate(dir) {
         if (offset > player.matrix[0].length) {
             rotate(player.matrix, -dir);
             player.pos.x = pos;
-            return;
+            return; //ensures piece cannot rotate through the wall
         }
     }
 }
@@ -150,7 +203,7 @@ const arena = createMatrix(12, 20); //12 numbers wide, 20 unites high
 
 const player = {
     pos: {x: 5, y: 5},
-    matrix: matrix,
+    matrix: createPiece('T'),
 }
 
 //allows user input to move pieces using arrow keys
