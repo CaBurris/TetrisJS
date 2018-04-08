@@ -3,6 +3,24 @@ const context = canvas.getContext('2d');
 
 context.scale(20, 20);  //increase object size
 
+//collect rows
+function arenaSweep() {
+    //iterate from the bottom up
+    outer: for(let y = arena.length - 1; y > 0; --y){
+        for (let x = 0; x < arena[y].length; ++x) {
+            // if line is not fully populated, then continue
+            if(arena[y][x] === 0) {
+                continue outer;
+            }
+        }
+        //splice returns all the rows taken out of the array- will remove a line that is full, not containing a 0. Will create an empty row
+        const row = arena.splice(y, 1)[0].fill(0);
+        //put this empty row on top of arena
+        arena.unshift(row);
+        ++y; //offset the y
+    }
+
+}
 
 //collision detection function
 function collide(arena, player) {
@@ -117,7 +135,7 @@ function playerDrop() {
         player.pos.y--; //move the player back up
         merge(arena, player);
         playerReset(); //will create a random new piece
-        player.pos.y = 0; //set the player back to the top
+        arenaSweep(); //will remove any filled lines
     }
     dropCounter = 0;
 }
